@@ -6,21 +6,28 @@ import { signUpValidationSchema } from './validations/signUpValidationSchema';
 import { SignUpData } from './interfaces/signUpData';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../navigation/AuthStack';
+import { useUser } from '../../models/user/useUser';
 
 export const SignUpScreen: FC = () => {
+  const { signUp: signUpProps } = useUser();
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
 
   const formik = useFormik<SignUpData>({
     initialValues: {
+      userName: '',
       email: '',
       password: '',
       repeatPassword: '',
     },
     validationSchema: signUpValidationSchema,
-    onSubmit: (val) => {
-      console.log(val, 'onSubmit');
+    onSubmit: async (value) => {
+      await signUpProps.signUp({
+        email: value.email,
+        password: value.password,
+        userName: value.userName,
+      });
     },
   });
 

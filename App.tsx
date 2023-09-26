@@ -10,6 +10,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AppStack } from './src/navigation/AppStack';
 import { AuthStack } from './src/navigation/AuthStack';
 import { StatusBar } from 'expo-status-bar';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export default function App() {
   useOnlineManager();
@@ -28,17 +31,19 @@ export default function App() {
 
   const isLoading = tokenProps.token === undefined || tokenProps.isLoading || user === undefined;
 
-  console.log(tokenProps, 'tokenProps');
+  console.log(queryClient, 'queryClient');
 
   return (
-    <PaperProvider>
-      <SafeAreaProvider>
-        <StatusBar style="dark" />
-        {isLoading && <PageLoader />}
-        {!isLoading && (
-          <NavigationContainer>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>
-        )}
-      </SafeAreaProvider>
-    </PaperProvider>
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider>
+        <SafeAreaProvider>
+          <StatusBar style="dark" />
+          {isLoading && <PageLoader />}
+          {!isLoading && (
+            <NavigationContainer>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>
+          )}
+        </SafeAreaProvider>
+      </PaperProvider>
+    </QueryClientProvider>
   );
 }
