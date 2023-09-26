@@ -13,7 +13,11 @@ interface PostRequestParams<BodyDataType = unknown> {
   headers?: Partial<RawAxiosRequestHeaders>;
 }
 
-export type ApiMutation = <Response, RequestParams = undefined>({ axios, url, body }: PostRequestParams<RequestParams>) => Promise<ApiRes<Response>>;
+export type ApiMutation = <Response, RequestParams = undefined>({
+  axios,
+  url,
+  body,
+}: PostRequestParams<RequestParams>) => Promise<ApiRes<Response>>;
 
 type ApiDeleteMutation = <Response>({ axios, url }: PostRequestParams) => Promise<ApiRes<Response>>;
 

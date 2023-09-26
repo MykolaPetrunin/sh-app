@@ -10,7 +10,9 @@ interface IQueryBuilderFunctionProps<Props, Res> {
   initialData?: Res;
 }
 
-type IQueryBuilderRes<Props, Res, Error> = (props: IQueryBuilderFunctionProps<Props, Res>) => UseQueryResult<Res, Error>;
+type IQueryBuilderRes<Props, Res, Error> = (
+  props: IQueryBuilderFunctionProps<Props, Res>,
+) => UseQueryResult<Res, Error>;
 
 type PathBuilder<Props> = (source?: Props) => string;
 

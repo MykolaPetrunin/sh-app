@@ -26,9 +26,17 @@ interface IMutationBuilderProps<Props, Body, QueryRes, Res> {
   disableGlobalError?: boolean;
 }
 
-type IMutationBuilderRes<Res, Props, Error> = (keys: unknown[]) => UseMutationResult<Res, unknown, Props, Error>;
+type IMutationBuilderRes<Res, Props, Error> = (
+  keys: unknown[],
+) => UseMutationResult<Res, unknown, Props, Error>;
 
-export function mutationBuilder<Props = undefined, Res = undefined, QueryRes = undefined, Body = undefined, Error = unknown>({
+export function mutationBuilder<
+  Props = undefined,
+  Res = undefined,
+  QueryRes = undefined,
+  Body = undefined,
+  Error = unknown,
+>({
   path,
   method,
   propsTransformer,
