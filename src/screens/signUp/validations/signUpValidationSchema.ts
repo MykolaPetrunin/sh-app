@@ -2,6 +2,7 @@ import { SignUpData } from '../interfaces/signUpData';
 import * as yup from 'yup';
 
 export const signUpValidationSchema: yup.Schema<SignUpData> = yup.object({
+  userName: yup.string().required('User name is required'),
   email: yup.string().required('Email is required').email('Enter a valid email'),
   password: yup
     .string()

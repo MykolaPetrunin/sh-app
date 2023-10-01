@@ -7,7 +7,7 @@ class ApiService {
 
   private constructor() {
     this.axiosInstance = axios.create({
-      baseURL: 'https://sh-api-7c55ebb3525c.herokuapp.com/api', // Ваш базовий URL
+      baseURL: 'https://sh-api-7c55ebb3525c.herokuapp.com/api',
     });
   }
 

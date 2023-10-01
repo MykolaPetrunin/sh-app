@@ -9,7 +9,7 @@ const Tab = createMaterialBottomTabNavigator();
 export const AuthTabs: FC = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Feed"
+      initialRouteName="SignIn"
       activeColor="#e91e63"
       barStyle={{ backgroundColor: 'tomato' }}
     >

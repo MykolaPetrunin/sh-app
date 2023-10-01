@@ -1,15 +1,17 @@
 import { FC, useState } from 'react';
 import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useFormik } from 'formik';
-import { Button, Card, HelperText, TextInput } from 'react-native-paper';
+import { Button, Card, HelperText, Snackbar, TextInput } from 'react-native-paper';
 import { signUpValidationSchema } from './validations/signUpValidationSchema';
 import { SignUpData } from './interfaces/signUpData';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useUser } from '../../models/user/useUser';
+import { PageLoader } from '../../components/atoms/pageLoader/PageLoader';
 
 export const SignUpScreen: FC = () => {
-  const { signUp: signUpProps } = useUser();
+  const [snackBarIsVisible, setSnackBarIsVisible] = useState(false);
+  const { signUp: signUpProps } = useUser({});
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
@@ -28,8 +30,11 @@ export const SignUpScreen: FC = () => {
         password: value.password,
         userName: value.userName,
       });
+      setSnackBarIsVisible(true);
     },
   });
+
+  if (signUpProps.isLoading) return <PageLoader />;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -39,6 +44,15 @@ export const SignUpScreen: FC = () => {
             <Card>
               <Card.Title title="SignIn" />
               <Card.Content>
+                <TextInput
+                  error={!!formik.errors.userName}
+                  value={formik.values.userName}
+                  onChangeText={formik.handleChange('userName')}
+                  label="User name"
+                />
+                <HelperText type="error" visible={!!formik.errors.userName}>
+                  {formik.errors.userName}
+                </HelperText>
                 <TextInput
                   error={!!formik.errors.email}
                   value={formik.values.email}
@@ -91,6 +105,13 @@ export const SignUpScreen: FC = () => {
           </Button>
         </View>
       </ScrollView>
+      <Snackbar
+        visible={snackBarIsVisible}
+        onDismiss={() => setSnackBarIsVisible(false)}
+        duration={5000}
+      >
+        Please verify your email.
+      </Snackbar>
     </SafeAreaView>
   );
 };

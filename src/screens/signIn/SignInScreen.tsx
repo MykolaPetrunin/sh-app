@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useFormik } from 'formik';
 import { Button, Card, HelperText, TextInput } from 'react-native-paper';
@@ -6,8 +6,14 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { SignInData } from './interfaces/signInData';
 import { signInValidationSchema } from './validations/signInValidationSchema';
+import { useUser } from '../../models/user/useUser';
+import { TokenContext } from '../../store/onBoarding/TokenContext';
+import { setToken } from '../../store/onBoarding/tokenActions';
+import { PageLoader } from '../../components/atoms/pageLoader/PageLoader';
 
 export const SignInScreen: FC = () => {
+  const { dispatchTokenState } = useContext(TokenContext);
+  const { token: tokenProps } = useUser({});
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
 
@@ -17,10 +23,13 @@ export const SignInScreen: FC = () => {
       password: '',
     },
     validationSchema: signInValidationSchema,
-    onSubmit: (val) => {
-      console.log(val, 'onSubmit');
+    onSubmit: async (val) => {
+      const token = await tokenProps.login(val);
+      dispatchTokenState(setToken(token));
     },
   });
+
+  if (tokenProps.isLoading) return <PageLoader />;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
