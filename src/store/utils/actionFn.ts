@@ -10,7 +10,7 @@ const actionFn = <TAction extends GenericActionWithPayload>(
     ({
       type: actionType,
       payload,
-    } as TAction);
+    }) as TAction;
 };
 
 export default actionFn;
