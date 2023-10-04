@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import paramsToKeys from '../../../query/utils/paramsToKeys';
 import { ItemsBody } from '../../../query/interfaces/itemsBody';
 import { debounce } from 'lodash';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { InfiniteRes } from '../../../query/interfaces/infiniteRes';
 
 export interface UseItemsProps {
   isEnabled: boolean;
@@ -18,8 +20,12 @@ export interface UseItemsRes {
   isFetchingNextPage: boolean;
   search: (val: string) => void;
   searchText: string;
+  updateItem: (item: Product) => void;
+  removeItem: (itemId: string) => void;
 }
 export const useItems = ({ isEnabled, limit = 20 }: UseItemsProps): UseItemsRes => {
+  const queryClient = useQueryClient();
+
   const [searchText, setSearchText] = useState<string>('');
 
   const [searchVal, setSearchVal] = useState<string>('');
@@ -33,7 +39,7 @@ export const useItems = ({ isEnabled, limit = 20 }: UseItemsProps): UseItemsRes 
 
   const { data, isLoading, refetch, isRefetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useProductsQuery({
-      keys: keys,
+      keys,
       isEnabled,
       getNextPageParam: (lastPage) => {
         return lastPage.meta.newCursor;
@@ -57,6 +63,33 @@ export const useItems = ({ isEnabled, limit = 20 }: UseItemsProps): UseItemsRes 
     setSearchText(val);
   };
 
+  const updateItem = (item: Product) => {
+    queryClient.setQueryData<InfiniteData<InfiniteRes<Product>>>(keys, (data) => {
+      if (!data) return data;
+
+      return {
+        ...data,
+        pages: data.pages.map((page) => ({
+          ...page,
+          data: page.data.map((it) => (it.id === item.id ? item : it)),
+        })),
+      };
+    });
+  };
+  const removeItem = (itemId: string) => {
+    queryClient.setQueryData<InfiniteData<InfiniteRes<Product>>>(keys, (data) => {
+      if (!data) return data;
+
+      return {
+        ...data,
+        pages: data.pages.map((page) => ({
+          ...page,
+          data: page.data.filter((it) => it.id !== itemId),
+        })),
+      };
+    });
+  };
+
   return {
     refetch,
     fetchNextPage: hasNextPage ? fetchNextPage : undefined,
@@ -64,6 +97,8 @@ export const useItems = ({ isEnabled, limit = 20 }: UseItemsProps): UseItemsRes 
     isFetchingNextPage,
     searchText: searchText,
     search: onSearchChange,
+    updateItem,
+    removeItem,
     items: data ? data.pages.reduce<Product[]>((acc, page) => [...acc, ...page.data], []) : [],
   };
 };

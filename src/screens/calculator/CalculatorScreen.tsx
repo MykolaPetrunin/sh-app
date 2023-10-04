@@ -1,15 +1,17 @@
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View } from 'react-native';
-import { Button, Card, Text } from 'react-native-paper';
-import { NavigationProp, useNavigation, useRoute } from '@react-navigation/native';
+import { Button, Card, IconButton, Text } from 'react-native-paper';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { CalculatorStackParamList } from '../../navigation/CalculatorStack';
 import { Product } from '../../models/product/intrfaces/product';
 import { ProductCard } from '../../components/atoms/productCard/ProductCard';
 import { Macronutrients } from './interfaces/macronutrients';
 import { calculateMacronutrients } from './utils/calculateMacronutrients';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CalculatorScreen: FC = () => {
-  const route = useRoute();
+  const insets = useSafeAreaInsets();
+  const route = useRoute<RouteProp<CalculatorStackParamList, 'Calculator'>>();
   const navigation = useNavigation<NavigationProp<CalculatorStackParamList>>();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,11 +25,13 @@ export const CalculatorScreen: FC = () => {
   }, [products]);
 
   useEffect(() => {
-    const product = (route.params as { product?: Product })?.product;
+    const product = route.params?.product;
     if (!product) return;
 
     setProducts((prevState) => [...prevState, product]);
   }, [route.params]);
+
+  console.log(insets, 'insets');
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
@@ -105,8 +109,15 @@ export const CalculatorScreen: FC = () => {
                       prevState.map((item) => (item.id === newProduct.id ? newProduct : item)),
                     );
                   }}
-                  onRemove={({ id }) =>
-                    setProducts((prevState) => prevState.filter((item) => item.id !== id))
+                  actions={
+                    <IconButton
+                      icon="trash-can-outline"
+                      onPress={() =>
+                        setProducts((prevState) =>
+                          prevState.filter((item) => item.id !== product.id),
+                        )
+                      }
+                    />
                   }
                 />
               ))}

@@ -4,7 +4,7 @@ export interface Product {
   carbohydrates: number;
   fats: number;
   title: string;
-  user_id: string;
+  userId: string;
   barcode?: string;
   description?: string;
   created_at: string;

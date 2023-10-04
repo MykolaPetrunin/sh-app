@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { Product } from '../../../models/product/intrfaces/product';
-import { Button, Card, DataTable, HelperText, IconButton, TextInput } from 'react-native-paper';
+import { Button, Card, DataTable, HelperText, TextInput } from 'react-native-paper';
 import { View } from 'react-native';
 import { useFormik } from 'formik';
 import { productCardValidation } from './validations/productCardValidation';
@@ -10,13 +10,13 @@ interface ProductCardProps {
   onPress?: (product: Product) => void;
   add?: (product: Product) => void;
   cancel?: () => void;
-  onRemove?: (product: Product) => void;
+  actions?: ReactElement;
   onQuantityChange?: (product: Product) => void;
 }
 
 export const ProductCard: FC<ProductCardProps> = ({
   onQuantityChange,
-  onRemove,
+  actions,
   product,
   cancel,
   add,
@@ -38,14 +38,7 @@ export const ProductCard: FC<ProductCardProps> = ({
   return (
     <View style={{ padding: 4 }}>
       <Card onPress={onPress ? () => onPress(product) : undefined}>
-        <Card.Title
-          title={product.title}
-          right={() =>
-            onRemove ? (
-              <IconButton icon="trash-can-outline" onPress={() => onRemove(product)} />
-            ) : null
-          }
-        />
+        <Card.Title title={product.title} right={() => actions} />
         <Card.Content>
           <DataTable>
             <DataTable.Header>
