@@ -1,5 +1,4 @@
 import { useUpdateRecipeMutation } from '../api/useUpdateRecipeMutation';
-import { Recipe } from '../intrfaces/recipe';
 import { UpdateRecipeProps } from '../intrfaces/updateRecipeProps';
 
 export interface UseUpdateItemRes {
