@@ -35,11 +35,11 @@ export const ProductScreen: FC = () => {
           id: productFromRoutes.id,
           ...normalizedVal,
         });
-        navigation.navigate('Products', { updatedProduct });
+        navigation.navigate('Products', { updatedProduct, parentStack: 'Calculator' });
         return;
       }
       const newProduct = await product.createItem.crete(normalizedVal);
-      navigation.navigate('Products', { newProduct });
+      navigation.navigate('Products', { newProduct, parentStack: 'Calculator' });
     },
   });
 

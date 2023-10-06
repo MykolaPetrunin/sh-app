@@ -84,6 +84,7 @@ export const CalculatorScreen: FC = () => {
             onPress={() =>
               navigation.navigate('Products', {
                 selectedProducts: products.map(({ id }) => id),
+                parentStack: 'Calculator',
               })
             }
           >

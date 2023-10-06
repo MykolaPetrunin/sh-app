@@ -7,7 +7,12 @@ import { ProductScreen } from '../screens/product/ProductScreen';
 
 export interface CalculatorStackParamList {
   Calculator: { product?: Product };
-  Products: { selectedProducts?: string[]; newProduct?: Product; updatedProduct?: Product };
+  Products: {
+    selectedProducts?: string[];
+    newProduct?: Product;
+    updatedProduct?: Product;
+    parentStack: 'Calculator' | 'Recipe';
+  };
   Product: { product?: Product };
   [key: string]: undefined | object;
 }

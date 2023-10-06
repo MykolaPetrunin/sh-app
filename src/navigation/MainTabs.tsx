@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { RecipesScreen } from '../screens/recipes/RecipesScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { CalculatorStack } from './CalculatorStack';
+import { RecipesStack } from './RecipesStack';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -25,8 +25,8 @@ export const MainTabs: FC = () => {
         }}
       />
       <Tab.Screen
-        name="Recipes"
-        component={RecipesScreen}
+        name="RecipesStack"
+        component={RecipesStack}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="food-fork-drink" color={color} size={26} />

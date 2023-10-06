@@ -1,17 +1,17 @@
 import React, { FC, ReactElement } from 'react';
-import { Product } from '../../../models/product/intrfaces/product';
 import { Button, Card, DataTable, HelperText, TextInput } from 'react-native-paper';
 import { View } from 'react-native';
 import { useFormik } from 'formik';
 import { productCardValidation } from './validations/productCardValidation';
+import { ProductCardData } from './interfaces/productCardData';
 
 interface ProductCardProps {
-  product: Product;
-  onPress?: (product: Product) => void;
-  add?: (product: Product) => void;
+  product: ProductCardData;
+  onPress?: (product: ProductCardData) => void;
+  add?: (product: ProductCardData) => void;
   cancel?: () => void;
   actions?: ReactElement;
-  onQuantityChange?: (product: Product) => void;
+  onQuantityChange?: (product: ProductCardData) => void;
 }
 
 export const ProductCard: FC<ProductCardProps> = ({

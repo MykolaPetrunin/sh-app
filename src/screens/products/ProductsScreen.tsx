@@ -15,6 +15,7 @@ import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navig
 import { CalculatorStackParamList } from '../../navigation/CalculatorStack';
 import { ProductCard } from '../../components/atoms/productCard/ProductCard';
 import { CustomMenu, CustomMenuRefObj } from '../../components/atoms/customMenu/CustomMenu';
+import { RecipesStackParamList } from '../../navigation/RecipesStack';
 
 export const ProductsScreen: FC = () => {
   const menuRef = useRef<CustomMenuRefObj>(null);
@@ -23,7 +24,8 @@ export const ProductsScreen: FC = () => {
 
   const [productToAdd, setProductToAdd] = useState<Product | undefined>();
 
-  const navigation = useNavigation<NavigationProp<CalculatorStackParamList>>();
+  const navigation =
+    useNavigation<NavigationProp<CalculatorStackParamList | RecipesStackParamList>>();
 
   const { items: products, removeItem: removeProductProps } = useProduct({ isItemsEnabled: true });
 
@@ -100,11 +102,21 @@ export const ProductsScreen: FC = () => {
       />
       <Portal>
         <Modal visible={!!productToAdd} onDismiss={() => setProductToAdd(undefined)}>
-          <ProductCard
-            product={productToAdd!}
-            cancel={() => setProductToAdd(undefined)}
-            add={(product) => navigation.navigate('Calculator', { product })}
-          />
+          {productToAdd && (
+            <ProductCard
+              product={productToAdd}
+              cancel={() => setProductToAdd(undefined)}
+              add={(product) => {
+                const isCalculator = route.params.parentStack === 'Calculator';
+
+                navigation.navigate(isCalculator ? 'CalculatorStack' : 'RecipesStack', {
+                  screen: route.params.parentStack,
+                  params: { product },
+                });
+                setProductToAdd(undefined);
+              }}
+            />
+          )}
         </Modal>
         <Modal visible={!!productToDelete} onDismiss={() => setProductToDelete(undefined)}>
           <View style={{ paddingHorizontal: 16 }}>
