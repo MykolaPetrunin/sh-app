@@ -1,17 +1,27 @@
 import { mutationBuilder, MutationMethods } from '../../../query/utils/mutationBuilder';
-import { Recipe } from '../intrfaces/recipe';
-import { recipeResToRecipe } from '../utils/recipeResToRecipe';
-import { RecipeRes } from '../intrfaces/recipeRes';
 import { UpdateRecipeProps } from '../intrfaces/updateRecipeProps';
 
-type Body = Omit<UpdateRecipeProps, 'id'>;
+interface Body {
+  title?: string;
+  products?: {
+    product_id: string;
+    quantity: number;
+  }[];
+}
 
-export const useUpdateRecipeMutation = mutationBuilder<UpdateRecipeProps, Recipe, RecipeRes, Body>({
+export const useUpdateRecipeMutation = mutationBuilder<UpdateRecipeProps, unknown, unknown, Body>({
   path: (source) => `/recipes/${source.id}`,
   method: MutationMethods.PATCH,
-  resTransformer: recipeResToRecipe,
+  resTransformer: (res) => res,
   propsTransformer: (source) => ({
     ...(source.title ? { title: source.title } : {}),
-    ...(source.products ? { proteins: source.products } : {}),
+    ...(source.products
+      ? {
+          products: source.products.map(({ productId, quantity }) => ({
+            product_id: productId,
+            quantity,
+          })),
+        }
+      : {}),
   }),
 });

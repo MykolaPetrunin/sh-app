@@ -16,6 +16,7 @@ import { CalculatorStackParamList } from '../../navigation/CalculatorStack';
 import { ProductCard } from '../../components/atoms/productCard/ProductCard';
 import { CustomMenu, CustomMenuRefObj } from '../../components/atoms/customMenu/CustomMenu';
 import { RecipesStackParamList } from '../../navigation/RecipesStack';
+import { ProductCardData } from '../../components/atoms/productCard/interfaces/productCardData';
 
 export const ProductsScreen: FC = () => {
   const menuRef = useRef<CustomMenuRefObj>(null);
@@ -48,8 +49,8 @@ export const ProductsScreen: FC = () => {
     products.updateItem(route.params.updatedProduct);
   }, [route.params.updatedProduct]);
 
-  const productPressHandler = (product: Product) => {
-    setProductToAdd(product);
+  const productPressHandler = (product: ProductCardData) => {
+    setProductToAdd({ ...product, userId: '', created_at: '', updated_at: '' });
   };
 
   return (

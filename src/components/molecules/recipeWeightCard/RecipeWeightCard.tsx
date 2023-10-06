@@ -1,9 +1,12 @@
 import React, { FC, useMemo, useState } from 'react';
 import { Button, Card, HelperText, TextInput } from 'react-native-paper';
-import { Recipe } from '../../../models/recipe/intrfaces/recipe';
 import { useFormik } from 'formik';
 import { View } from 'react-native';
 import { recipeWeightCardValidation } from './validations/recipeWeightCardValidation';
+import { Recipe } from './interfaces/recipe';
+import { ProductCardData } from '../../atoms/productCard/interfaces/productCardData';
+import { getProductFromRecipe } from './utils/getProductFromRecipe';
+import { ProductCard } from '../../atoms/productCard/ProductCard';
 
 interface RecipeWeightCardProps {
   recipe: Recipe;
@@ -32,6 +35,17 @@ export const RecipeWeightCard: FC<RecipeWeightCardProps> = ({ onCancel, onSubmit
       });
     },
   });
+
+  const product = useMemo<ProductCardData>(() => {
+    return {
+      id: 'newProd',
+      title: formik.values.title,
+      ...getProductFromRecipe({
+        products: recipe.products || [],
+        totalWeight: formik.values.totalWeight,
+      }),
+    };
+  }, [formik.values]);
 
   return (
     <View style={{ paddingHorizontal: 16 }}>
@@ -66,6 +80,8 @@ export const RecipeWeightCard: FC<RecipeWeightCardProps> = ({ onCancel, onSubmit
           <HelperText type="error" visible={!!formik.errors.totalWeight}>
             {formik.errors.totalWeight}
           </HelperText>
+
+          <ProductCard product={product} />
         </Card.Content>
         <Card.Actions>
           <Button onPress={onCancel}>Cancel</Button>

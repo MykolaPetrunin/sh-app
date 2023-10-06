@@ -7,10 +7,8 @@ import { Product } from '../../models/product/intrfaces/product';
 import { ProductCard } from '../../components/atoms/productCard/ProductCard';
 import { Macronutrients } from './interfaces/macronutrients';
 import { calculateMacronutrients } from './utils/calculateMacronutrients';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CalculatorScreen: FC = () => {
-  const insets = useSafeAreaInsets();
   const route = useRoute<RouteProp<CalculatorStackParamList, 'Calculator'>>();
   const navigation = useNavigation<NavigationProp<CalculatorStackParamList>>();
 
@@ -30,8 +28,6 @@ export const CalculatorScreen: FC = () => {
 
     setProducts((prevState) => [...prevState, product]);
   }, [route.params]);
-
-  console.log(insets, 'insets');
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
@@ -107,7 +103,11 @@ export const CalculatorScreen: FC = () => {
                   product={product}
                   onQuantityChange={(newProduct) => {
                     setProducts((prevState) =>
-                      prevState.map((item) => (item.id === newProduct.id ? newProduct : item)),
+                      prevState.map((item) =>
+                        item.id === newProduct.id
+                          ? { ...newProduct, userId: '', created_at: '', updated_at: '' }
+                          : item,
+                      ),
                     );
                   }}
                   actions={

@@ -11,7 +11,6 @@ export const useUpdateItem = (): UseUpdateItemRes => {
   const { isLoading, mutateAsync } = useUpdateProductMutation(['UpdateProductMutation']);
 
   const update = async (item: UpdateProductProps): Promise<Product> => {
-    console.log(item, 'jghkkjk');
     return await mutateAsync(item);
   };
 

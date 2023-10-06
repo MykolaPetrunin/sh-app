@@ -10,8 +10,9 @@ import { recipeValidation } from './validations/recipeValidation';
 import { useRecipe } from '../../models/recipe/useRecipe';
 import { PageLoader } from '../../components/atoms/pageLoader/PageLoader';
 import { ProductCard } from '../../components/atoms/productCard/ProductCard';
-import RecipeWeightCard from '../../components/atoms/recipeWeightCard/RecipeWeightCard';
+import RecipeWeightCard from '../../components/molecules/recipeWeightCard/RecipeWeightCard';
 import { Recipe } from '../../models/recipe/intrfaces/recipe';
+import { useProduct } from '../../models/product/useProduct';
 
 export const RecipeScreen: FC = () => {
   const route = useRoute<RouteProp<RecipesStackParamList, 'Recipe'>>();
@@ -24,6 +25,8 @@ export const RecipeScreen: FC = () => {
   const recipeFromRoutes = route.params.recipe;
 
   const recipe = useRecipe({ itemId: route.params.recipe?.id });
+
+  const product = useProduct({});
 
   const formik = useFormik<RecipeFormData>({
     initialValues: {
@@ -41,11 +44,13 @@ export const RecipeScreen: FC = () => {
       };
 
       if (recipeFromRoutes) {
-        const updatedRecipe = await recipe.updateItem.update({
+        await recipe.updateItem.update({
           id: recipeFromRoutes.id,
           ...normalizedRecipe,
         });
-        navigation.navigate('Recipes', { updatedRecipe });
+        navigation.navigate('Recipes', {
+          updatedRecipe: { ...recipeFromRoutes, title: normalizedRecipe.title },
+        });
         return;
       }
 
@@ -207,8 +212,16 @@ export const RecipeScreen: FC = () => {
         <Modal visible={!!recipeToCreate} onDismiss={() => setRecipeToCreate(undefined)}>
           {!!recipeToCreate && (
             <RecipeWeightCard
-              onSubmit={(val) => {
-                console.log(val);
+              onSubmit={async (val) => {
+                await product.createProductFromRecipe.cerate({
+                  recipeId: recipeFromRoutes!.id,
+                  title: val.title,
+                  ...(val.totalWeight ? { totalWeight: val.totalWeight } : {}),
+                });
+                setRecipeToCreate(undefined);
+                navigation.navigate('CalculatorStack', {
+                  screen: 'Calculator',
+                });
               }}
               recipe={recipeToCreate}
               onCancel={() => setRecipeToCreate(undefined)}

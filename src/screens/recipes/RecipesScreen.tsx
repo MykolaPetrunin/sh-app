@@ -1,11 +1,11 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { View, FlatList, SafeAreaView } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,
   Button,
   Card,
-  Menu,
+  IconButton,
   Modal,
   Portal,
   Searchbar,
@@ -14,11 +14,8 @@ import { Recipe } from '../../models/recipe/intrfaces/recipe';
 import { RecipesStackParamList } from '../../navigation/RecipesStack';
 import { useRecipe } from '../../models/recipe/useRecipe';
 import { RecipeCard } from '../../components/atoms/recipeCard/RecipeCard';
-import { CustomMenu, CustomMenuRefObj } from '../../components/atoms/customMenu/CustomMenu';
 
 export const RecipesScreen: FC = () => {
-  const menuRef = useRef<CustomMenuRefObj>(null);
-
   const [recipeToDelete, setRecipeToDelete] = useState<Recipe | undefined>();
 
   const navigation = useNavigation<NavigationProp<RecipesStackParamList>>();
@@ -31,6 +28,12 @@ export const RecipesScreen: FC = () => {
     if (!route.params?.newRecipe) return;
     recipe.items.refetch();
   }, [route.params?.newRecipe]);
+
+  useEffect(() => {
+    if (!route.params?.updatedRecipe) return;
+
+    recipe.items.updateItem(route.params.updatedRecipe);
+  }, [route.params?.updatedRecipe]);
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
@@ -52,28 +55,14 @@ export const RecipesScreen: FC = () => {
           onEndReachedThreshold={0.8}
           renderItem={(recipeData) => (
             <RecipeCard
-              onPress={() => {}}
+              onPress={() => navigation.navigate('Recipe', { recipe: recipeData.item })}
               key={recipeData.item.id}
               recipe={recipeData.item}
               actions={
-                <CustomMenu ref={menuRef}>
-                  <Menu.Item
-                    onPress={() => {
-                      if (menuRef.current) menuRef.current.closeMenu();
-                      navigation.navigate('Recipe', { recipe: recipeData.item });
-                    }}
-                    title="Edit"
-                    leadingIcon="square-edit-outline"
-                  />
-                  <Menu.Item
-                    onPress={() => {
-                      if (menuRef.current) menuRef.current.closeMenu();
-                      setRecipeToDelete(recipeData.item);
-                    }}
-                    title="Delete"
-                    leadingIcon="trash-can-outline"
-                  />
-                </CustomMenu>
+                <IconButton
+                  icon="trash-can-outline"
+                  onPress={() => setRecipeToDelete(recipeData.item)}
+                />
               }
             />
           )}
