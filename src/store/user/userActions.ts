@@ -2,7 +2,6 @@ import actionFn from '../utils/actionFn';
 import { User } from './interfaces/user';
 
 export enum UserActionsTypes {
-  Login = 'Login',
   LogOut = 'LogOut',
   SetUser = 'SetUser',
   SetLoading = 'SetLoading',
@@ -22,4 +21,12 @@ export interface SetLoadingAction {
 
 export const setUserLoading = actionFn<SetLoadingAction>(UserActionsTypes.SetLoading);
 
-export type UserActions = SetUserAction | SetLoadingAction;
+export interface LogOutAction {
+  type: UserActionsTypes.LogOut;
+}
+
+export const logout = (): LogOutAction => ({
+  type: UserActionsTypes.LogOut,
+});
+
+export type UserActions = SetUserAction | SetLoadingAction | LogOutAction;

@@ -1,27 +1,20 @@
-import { useCurrentUser } from '../../../models/user/hooks/useCurrentUser';
 import { useUser } from '../../../models/user/useUser';
 import { useContext } from 'react';
-import { TokenContext } from '../../../store/onBoarding/TokenContext';
-import { setToken } from '../../../store/onBoarding/tokenActions';
+import { UserContext } from '../../../store/user/UserProvider';
+import { logout } from '../../../store/user/userActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface UseLogout {
   logOut: () => Promise<void>;
 }
 
 export const useLogout = (): UseLogout => {
-  const { dispatchTokenState } = useContext(TokenContext);
+  const { dispatchUserState } = useContext(UserContext);
 
-  const { token, currentUser } = useUser({
-    isUserEnabled: true,
-  });
   const logOut = async () => {
-    await token.logout();
+    await AsyncStorage.removeItem('userToken');
 
-    dispatchTokenState(setToken(null));
-
-    if (!currentUser.currentUser) return;
-
-    await currentUser.logOut();
+    dispatchUserState(logout());
   };
 
   return {

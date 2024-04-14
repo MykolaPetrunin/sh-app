@@ -10,6 +10,17 @@ export const userReducer: UserReducerType = (state, action) => {
         ...state,
         user: action.payload,
       };
+    case actionTypes.SetLoading:
+      return {
+        ...state,
+        loading: action.payload,
+      };
+    case actionTypes.LogOut:
+      return {
+        ...state,
+        user: undefined,
+        loading: false,
+      };
     default:
       return state;
   }
