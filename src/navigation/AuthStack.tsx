@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthTabs } from './AuthTabs';
 import { ForgotPasswordScreen } from '../screens/forgotPassword/ForgotPasswordScreen';
+
 const Stack = createNativeStackNavigator();
 
 export interface AuthStackParamList {

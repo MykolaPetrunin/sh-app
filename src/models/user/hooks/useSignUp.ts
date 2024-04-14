@@ -1,5 +1,5 @@
 import { useSignUpMutation } from '../api/useSignUpMutation';
-import NewUserData from '../interfaces/newUserData';
+import { NewUserData } from '../interfaces/newUserData';
 
 export interface UseSignUpRes {
   isLoading: boolean;

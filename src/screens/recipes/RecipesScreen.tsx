@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, FlatList, SafeAreaView } from 'react-native';
+import { View, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,

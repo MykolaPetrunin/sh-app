@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Card, IconButton, Text } from 'react-native-paper';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { CalculatorStackParamList } from '../../navigation/CalculatorStack';

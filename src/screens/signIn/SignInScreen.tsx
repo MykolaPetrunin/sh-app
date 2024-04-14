@@ -1,21 +1,42 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useFormik } from 'formik';
 import { Button, Card, HelperText, TextInput } from 'react-native-paper';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { AuthStackParamList } from '../../navigation/AuthStack';
 import { SignInData } from './interfaces/signInData';
 import { signInValidationSchema } from './validations/signInValidationSchema';
-import { useUser } from '../../models/user/useUser';
-import { TokenContext } from '../../store/onBoarding/TokenContext';
-import { setToken } from '../../store/onBoarding/tokenActions';
 import { PageLoader } from '../../components/atoms/pageLoader/PageLoader';
+import ApiService from '../../query/services/ApiService';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../navigation/AuthStack';
+import { UserContext } from '../../store/user/UserProvider';
+import { setUser, setUserLoading } from '../../store/user/userActions';
+import Api from '../../query/services/api';
+import { CurrentUserRes } from '../../models/user/interfaces/currentUserRes';
+import { currentUserResToCurrentUser } from '../../models/user/utils/currentUserResToCurrentUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SignInScreen: FC = () => {
-  const { dispatchTokenState } = useContext(TokenContext);
-  const { token: tokenProps } = useUser({});
-  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
-  const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+  const [isTokenLoading, setIsTokenLoading] = useState<boolean>(false);
+  const { userState, dispatchUserState } = useContext(UserContext);
+
+  const login = useCallback(async (token: string): Promise<void> => {
+    const axiosInstanceService = ApiService.getInstance();
+
+    axiosInstanceService.setAuthToken(token);
+
+    const axios = axiosInstanceService.getAxiosInstance();
+
+    dispatchUserState(setUserLoading(true));
+
+    try {
+      const res = await Api.get<CurrentUserRes>(axios, '/users/current-user');
+      dispatchUserState(setUserLoading(false));
+      dispatchUserState(setUser(currentUserResToCurrentUser(res.data)));
+    } catch {
+      await AsyncStorage.removeItem('userToken');
+      dispatchUserState(setUserLoading(false));
+    }
+  }, []);
 
   const formik = useFormik<SignInData>({
     initialValues: {
@@ -24,12 +45,33 @@ export const SignInScreen: FC = () => {
     },
     validationSchema: signInValidationSchema,
     onSubmit: async (val) => {
-      const token = await tokenProps.login(val);
-      dispatchTokenState(setToken(token));
+      try {
+        setIsTokenLoading(true);
+        const axios = ApiService.getInstance().getAxiosInstance();
+        const { data } = await Api.post<{ token: string }, SignInData>({
+          axios,
+          url: '/users/login',
+          body: val,
+        });
+
+        await login(data.token);
+      } finally {
+        setIsTokenLoading(false);
+      }
     },
   });
 
-  if (tokenProps.isLoading) return <PageLoader />;
+  useEffect(() => {
+    AsyncStorage.getItem('userToken').then((storageToken) => {
+      if (!storageToken) return;
+      login(storageToken).then();
+    });
+  }, [login]);
+
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+
+  if (isTokenLoading || userState.loading) return <PageLoader />;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

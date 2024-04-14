@@ -7,7 +7,6 @@ import { Button, Card, TextInput } from 'react-native-paper';
 import { ProductFormData } from './interfaces/productFormData';
 import { productValidation } from './validations/productValidation';
 import { useProduct } from '../../models/product/useProduct';
-
 export const ProductScreen: FC = () => {
   const route = useRoute<RouteProp<CalculatorStackParamList, 'Product'>>();
   const productFromRoutes = route.params.product;
