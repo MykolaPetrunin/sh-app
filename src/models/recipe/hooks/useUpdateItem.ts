@@ -10,6 +10,7 @@ export const useUpdateItem = (): UseUpdateItemRes => {
   const { isLoading, mutateAsync } = useUpdateRecipeMutation(['UpdateProductMutation']);
 
   const update = async (item: UpdateRecipeProps): Promise<void> => {
+    console.log(item, 'item in useUpdateItem');
     await mutateAsync(item);
   };
 

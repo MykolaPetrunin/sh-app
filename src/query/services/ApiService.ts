@@ -20,6 +20,7 @@ class ApiService {
   }
 
   public setAuthToken(token: string): void {
+    console.log(token);
     this.axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
     this._isTokenSet = true;
   }

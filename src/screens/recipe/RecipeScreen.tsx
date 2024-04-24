@@ -134,9 +134,13 @@ export const RecipeScreen: FC = () => {
               mode="elevated"
               style={{ flex: 1 }}
               onPress={() =>
-                navigation.navigate('Products', {
-                  selectedProducts: formik.values.products.map(({ id }) => id),
-                  parentStack: 'Recipe',
+                navigation.navigate('RecipesStack', {
+                  screen: 'Products',
+                  params: {
+                    selectedProducts: formik.values.products.map(({ id }) => id),
+                    parentStack: 'Recipe',
+                    recipe: !recipe.item.item ? undefined : recipe.item.item,
+                  },
                 })
               }
             >
@@ -149,20 +153,6 @@ export const RecipeScreen: FC = () => {
               onPress={() => formik.setFieldValue('products', [])}
             >
               Clean up
-            </Button>
-          </View>
-          <View>
-            <Button
-              icon="plus"
-              mode="elevated"
-              onPress={() =>
-                navigation.navigate('Products', {
-                  selectedProducts: formik.values.products.map(({ id }) => id),
-                  parentStack: 'Recipe',
-                })
-              }
-            >
-              Add Product
             </Button>
           </View>
           <View style={{ gap: 24 }}>

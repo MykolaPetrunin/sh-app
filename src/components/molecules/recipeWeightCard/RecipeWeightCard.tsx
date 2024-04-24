@@ -16,10 +16,6 @@ interface RecipeWeightCardProps {
 
 export const RecipeWeightCard: FC<RecipeWeightCardProps> = ({ onCancel, onSubmit, recipe }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const totalWeight = useMemo(
-    () => (recipe.products || []).reduce((acc, { quantity }) => acc + quantity, 0),
-    [recipe],
-  );
 
   const formik = useFormik<{ totalWeight: number; title: string }>({
     initialValues: {
@@ -30,7 +26,7 @@ export const RecipeWeightCard: FC<RecipeWeightCardProps> = ({ onCancel, onSubmit
     onSubmit: (val) => {
       setIsLoading(true);
       onSubmit({
-        totalWeight: val.totalWeight === totalWeight ? undefined : val.totalWeight,
+        totalWeight: val.totalWeight,
         title: val.title,
       });
     },

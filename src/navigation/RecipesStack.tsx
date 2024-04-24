@@ -4,10 +4,20 @@ import { RecipesScreen } from '../screens/recipes/RecipesScreen';
 import { Recipe } from '../models/recipe/intrfaces/recipe';
 import { RecipeScreen } from '../screens/recipe/RecipeScreen';
 import { Product } from '../models/product/intrfaces/product';
+import { ProductsScreen } from '../screens/products/ProductsScreen';
+import { ProductScreen } from '../screens/product/ProductScreen';
 
 export interface RecipesStackParamList {
   Recipes: { newRecipe?: Recipe; updatedRecipe?: Recipe };
   Recipe: { recipe?: Recipe; product?: Product };
+  Products: {
+    selectedProducts?: string[];
+    newProduct?: Product;
+    updatedProduct?: Product;
+    parentStack: 'Calculator' | 'Recipe';
+    recipe?: Recipe;
+  };
+  Product: { product?: Product; recipe?: Recipe };
   [key: string]: undefined | object;
 }
 
@@ -21,6 +31,16 @@ export const RecipesStack: FC = () => {
         name="Recipe"
         component={RecipeScreen}
         options={({ route }) => ({ title: route.params.recipe?.title || 'Create Recipe' })}
+      />
+      <Stack.Screen
+        name="Products"
+        component={ProductsScreen}
+        options={{ headerShown: true, title: 'Products' }}
+      />
+      <Stack.Screen
+        name="Product"
+        component={ProductScreen}
+        options={({ route }) => ({ title: route.params?.product?.title || 'Create Product' })}
       />
     </Stack.Navigator>
   );

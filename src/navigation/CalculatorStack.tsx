@@ -4,6 +4,7 @@ import { CalculatorScreen } from '../screens/calculator/CalculatorScreen';
 import { ProductsScreen } from '../screens/products/ProductsScreen';
 import { Product } from '../models/product/intrfaces/product';
 import { ProductScreen } from '../screens/product/ProductScreen';
+import { Recipe } from '../models/recipe/intrfaces/recipe';
 
 export interface CalculatorStackParamList {
   Calculator: { product?: Product };
@@ -12,8 +13,9 @@ export interface CalculatorStackParamList {
     newProduct?: Product;
     updatedProduct?: Product;
     parentStack: 'Calculator' | 'Recipe';
+    recipe?: Recipe;
   };
-  Product: { product?: Product };
+  Product: { product?: Product; recipe?: Recipe };
   [key: string]: undefined | object;
 }
 
@@ -35,7 +37,7 @@ export const CalculatorStack: FC = () => {
       <Stack.Screen
         name="Product"
         component={ProductScreen}
-        options={({ route }) => ({ title: route.params.product?.title || 'Create Product' })}
+        options={({ route }) => ({ title: route.params?.product?.title || 'Create Product' })}
       />
     </Stack.Navigator>
   );

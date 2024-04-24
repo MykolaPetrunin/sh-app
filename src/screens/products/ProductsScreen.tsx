@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useProduct } from '../../models/product/useProduct';
 import {
@@ -21,7 +21,7 @@ import { ProductCardData } from '../../components/atoms/productCard/interfaces/p
 export const ProductsScreen: FC = () => {
   const menuRef = useRef<CustomMenuRefObj>(null);
 
-  const route = useRoute<RouteProp<CalculatorStackParamList, 'Products'>>();
+  const route = useRoute<RouteProp<CalculatorStackParamList | RecipesStackParamList, 'Products'>>();
 
   const [productToAdd, setProductToAdd] = useState<Product | undefined>();
 
@@ -30,40 +30,48 @@ export const ProductsScreen: FC = () => {
 
   const { items: products, removeItem: removeProductProps } = useProduct({ isItemsEnabled: true });
 
-  const [selectedProductsIds, setSelectedProductIds] = useState<string[]>([]);
-
   const [productToDelete, setProductToDelete] = useState<Product | undefined>();
 
   useEffect(() => {
-    if (!route.params.selectedProducts) return;
-    setSelectedProductIds(route.params.selectedProducts);
-  }, [route.params.selectedProducts]);
-
-  useEffect(() => {
-    if (!route.params.newProduct) return;
+    if (!route.params?.newProduct) return;
     products.refetch();
-  }, [route.params.newProduct]);
+  }, [route.params?.newProduct]);
 
   useEffect(() => {
-    if (!route.params.updatedProduct) return;
+    if (!route.params?.updatedProduct) return;
     products.updateItem(route.params.updatedProduct);
-  }, [route.params.updatedProduct]);
+  }, [route.params?.updatedProduct]);
 
   const productPressHandler = (product: ProductCardData) => {
     setProductToAdd({ ...product, userId: '', created_at: '', updated_at: '' });
   };
+
+  const recipe = useMemo(() => route.params.recipe, [route.params.recipe]);
 
   return (
     <View
       style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 20, maxHeight: '100%', gap: 16 }}
     >
       <Searchbar placeholder="Search" onChangeText={products.search} value={products.searchText} />
-      <Button icon="plus" mode="elevated" onPress={() => navigation.navigate('Product', {})}>
+      <Button
+        icon="plus"
+        mode="elevated"
+        onPress={() =>
+          navigation.navigate(recipe ? 'RecipesStack' : 'CalculatorStack', {
+            screen: 'Product',
+            params: {
+              ...(recipe ? { recipe } : {}),
+            },
+          })
+        }
+      >
         Create Product
       </Button>
       <FlatList<Product>
         style={{ flex: 1 }}
-        data={products.items.filter(({ id }) => !selectedProductsIds.includes(id))}
+        data={products.items.filter(
+          ({ id }) => !(route.params?.selectedProducts || []).includes(id),
+        )}
         onEndReached={products.fetchNextPage}
         onEndReachedThreshold={0.8}
         renderItem={(product) => (
@@ -73,7 +81,10 @@ export const ProductsScreen: FC = () => {
                 <Menu.Item
                   onPress={() => {
                     if (menuRef.current) menuRef.current.closeMenu();
-                    navigation.navigate('Product', { product: product.item });
+                    navigation.navigate(recipe ? 'RecipesStack' : 'CalculatorStack', {
+                      screen: 'Product',
+                      params: { product: product.item, ...(recipe ? { recipe } : {}) },
+                    });
                   }}
                   title="Edit"
                   leadingIcon="square-edit-outline"
@@ -108,11 +119,9 @@ export const ProductsScreen: FC = () => {
               product={productToAdd}
               cancel={() => setProductToAdd(undefined)}
               add={(product) => {
-                const isCalculator = route.params.parentStack === 'Calculator';
-
-                navigation.navigate(isCalculator ? 'CalculatorStack' : 'RecipesStack', {
+                navigation.navigate(recipe ? 'RecipesStack' : 'CalculatorStack', {
                   screen: route.params.parentStack,
-                  params: { product },
+                  params: { product, ...(recipe ? { recipe } : {}) },
                 });
                 setProductToAdd(undefined);
               }}

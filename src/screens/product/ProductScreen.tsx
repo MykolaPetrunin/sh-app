@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { CalculatorStackParamList } from '../../navigation/CalculatorStack';
 import { useFormik } from 'formik';
@@ -7,11 +7,15 @@ import { Button, Card, TextInput } from 'react-native-paper';
 import { ProductFormData } from './interfaces/productFormData';
 import { productValidation } from './validations/productValidation';
 import { useProduct } from '../../models/product/useProduct';
+import { RecipesStackParamList } from '../../navigation/RecipesStack';
 export const ProductScreen: FC = () => {
-  const route = useRoute<RouteProp<CalculatorStackParamList, 'Product'>>();
-  const productFromRoutes = route.params.product;
+  const route = useRoute<RouteProp<CalculatorStackParamList | RecipesStackParamList, 'Product'>>();
+  const productFromRoutes = route.params?.product;
   const product = useProduct({});
-  const navigation = useNavigation<NavigationProp<CalculatorStackParamList>>();
+  const navigation =
+    useNavigation<NavigationProp<CalculatorStackParamList | RecipesStackParamList>>();
+
+  const recipe = useMemo(() => route.params?.recipe, [route.params?.recipe]);
 
   const formik = useFormik<ProductFormData>({
     initialValues: {
@@ -34,11 +38,25 @@ export const ProductScreen: FC = () => {
           id: productFromRoutes.id,
           ...normalizedVal,
         });
-        navigation.navigate('Products', { updatedProduct, parentStack: 'Calculator' });
+        navigation.navigate(recipe ? 'RecipesStack' : 'CalculatorStack', {
+          screen: 'Products',
+          params: {
+            updatedProduct,
+            parentStack: recipe ? 'Recipe' : 'Calculator',
+            recipe,
+          },
+        });
         return;
       }
       const newProduct = await product.createItem.crete(normalizedVal);
-      navigation.navigate('Products', { newProduct, parentStack: 'Calculator' });
+      navigation.navigate(recipe ? 'RecipesStack' : 'CalculatorStack', {
+        screen: 'Products',
+        params: {
+          newProduct,
+          parentStack: recipe ? 'Recipe' : 'Calculator',
+          recipe,
+        },
+      });
     },
   });
 
